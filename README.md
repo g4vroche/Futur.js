@@ -13,7 +13,7 @@ Allows you to chain function calls and using data provided by already executed f
 Usage examples :
 ---
  
-```  
+```javascript
 var futur = new Futur;
 var storyId = 1337; 
 
@@ -28,7 +28,7 @@ utur.do( beginTransaction )
 futur.inject() Example :
 ----
 
-```
+```javascript
 myCallback = function(futur, foo, bar){
 
   if ( bar ) {
@@ -84,7 +84,7 @@ Appends a Function in the stack, and 'set it' as the currently defined method.
 
 Example :
 
-```
+```javascript
 
 foo = function(futur, a){
     futur.send(a);
@@ -125,7 +125,7 @@ May be called seerals times.
 
 Exemple:
 
-```
+```javascript
 futur.do( foo ).with("I am foo")
    .then( bar ).with("I am bar")
    .now();
@@ -143,7 +143,7 @@ Tells `Futur` to use the data stored in its internal storage, associated with th
 Data will be retrieved at call time, allowing you to use data provided by a previous method in the stack.
 
 Exemple :
-```
+```javascript
 futur.do( foo ).as('first_call_data') .with("I am foo");
    .then( bar ).using("first_call_data")
    .now();
@@ -159,7 +159,7 @@ Prepends a function call to the stack, as the "next to be executed" item.
 
 Exemple : 
 
-``` 
+```javascript 
 foo = function(futur){
     console.log("foo");
 

@@ -1,31 +1,4 @@
-/**
- *
- * Lightweight promises implementation
- *
- * // Usage example :
- * 
- * var futur = new Futur;
- * var storyId = 1337; 
- *
- * futur.do( beginTransaction )
- *      .then( createPost ).as('post')
- *      .then( manageTags ).using('post').with(req.body.tags)
- *      .then( publishToTwitter ).using('post')
- *      .then( commit )
- *      .now();
- * 
- * // futur.inject() Example :
- *
- * myCallback = function(futur, foo, bar){
- *
- *  if ( bar ) {
- *      futur.inject( anotherCallback ).with( foo ).now();
- *  } else {
- *      futur.next();
- *  }
- * }
- *
- */
+
 Futur = function(){
 
     this.stack  = [];

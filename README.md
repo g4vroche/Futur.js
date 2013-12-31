@@ -14,14 +14,35 @@ Usage examples :
 ---
  
 ```javascript
-var futur = new Futur;
-var storyId = 1337; 
 
-utur.do( beginTransaction )
+createPost = function(futur, postData){
+
+    // Insert stuff in database and when done return a json object "post"
+    // post = {id: insertID, title:... }
+    
+    insertPostInDB(postData, function(post){
+        futur.send( post );
+    });
+}
+
+manageTags = function(futur, post, tags){
+
+    // insert association in database for tags array and "post.id"
+    
+    insertTagsInDB(tags, post.id, function(){
+        futur.next();
+    });
+}
+
+
+
+var futur = new Futur;
+
+futur.do( beginTransaction )
     .then( createPost ).as('post')
     .then( manageTags ).using('post').with(req.body.tags)
-    .then( publishToTwitter ).using('post')
     .then( commit )
+    .then( publishToTwitter ).using('post')
     .now();
 ```
  

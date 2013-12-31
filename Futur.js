@@ -217,6 +217,3 @@ Futur = function(){
 };
 
 
-
-module.exports = Futur;
-

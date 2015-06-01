@@ -6,6 +6,12 @@ Futur = function(){
     this.key    = null;
     this.state  = 0;
 
+    this.incr = 0;
+
+    this.data.hit = this.incr;
+
+    this.incr++;
+
     /**
      * Get and store result from current stack item
      *
@@ -34,22 +40,42 @@ Futur = function(){
         this.state = 1;
         if ( this.stack.length > 0 ){
             callback = this.stack.shift();
+
+            callback.send = this.send;
+
+            var that = this;
+            next = function(){
+                that.next();
+            };
             
             this.key = callback.key;
-
+            
             this.processDynArgs(callback.args);
 
-            callback.args.unshift(this);
+            if ( callback.key !== null ){
+                callback.args.push(this.callback(callback));
+            } else if ( callback.args.length < callback.call.getParameters().length ){
+                callback.args.push(this.callback(callback));
+            }
 
             callback.call.apply(null, callback.args);
         }
-    }
+    };
+
+    this.callback = function(callback){
+        var that = this;
+
+        return function( err, response ){
+            that.set( callback.key, response );
+            that.next();
+        };
+    };
 
     this.processDynArgs = function(args){
         for(var i=0; i<args.length; i++){
 
             if ( args[i] instanceof Object && args[i].constructor.name == 'DynArg' ){
-                args[i] = args[i].read();
+                args[i] = this.data[args[i].read()];
             }
         }
 
@@ -64,6 +90,17 @@ Futur = function(){
      */
     this.get = function(key){
         return this.data[key];
+    };
+
+
+    /**
+     * Store data
+     *
+     * @param String key
+     * @param mixed value
+     */
+    this.set = function(key, value){
+        this.data[key] = value;
     };
 
     /**
@@ -179,7 +216,7 @@ Futur = function(){
 
         function DynArg(key){
             this.read = function(){
-                return self.data[key];
+                return key;
             }
         }
         return new DynArg(key);
@@ -189,4 +226,6 @@ Futur = function(){
     return this;
 };
 
+
+module.exports = Futur;
 

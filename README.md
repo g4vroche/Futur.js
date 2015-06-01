@@ -15,23 +15,21 @@ Usage examples :
  
 ```javascript
 
-createPost = function(futur, postData){
+createPost = function(postData, callback){
 
     // Insert stuff in database and when done return a json object "post"
     // post = {id: insertID, title:... }
     
     insertPostInDB(postData, function(post){
-        futur.send( post );
+        callback(null, post);
     });
 }
 
-manageTags = function(futur, post, tags){
+manageTags = function(post, tags, callback){
 
     // insert association in database for tags array and "post.id"
     
-    insertTagsInDB(tags, post.id, function(){
-        futur.next();
-    });
+    insertTagsInDB(tags, post.id, callback);
 }
 
 
@@ -50,12 +48,12 @@ futur.inject() Example :
 ----
 
 ```javascript
-myCallback = function(futur, foo, bar){
+myCallback = function(foo, bar, callback){
 
   if ( bar ) {
     futur.inject( anotherCallback ).with( foo ).now();
   } else {
-    futur.next();
+    callback(null);
   }
 }
 ```
@@ -63,9 +61,11 @@ myCallback = function(futur, foo, bar){
 Usable function definition
 ----
 
-Functions should expect an instance of Futur as their first argument.
+Functions should follow the pattern "error first, callback last".
 
-Functions should call [next](#next), [send](#send) or [json](#json) when their task is done, to allow the stack to be executed.
+If no callback argument exists, Futur will trigger next function in its stack.
+*Limitation:* In this particular case, all arguments shoud be provided in function registring
+
 
 
 Method summary
@@ -107,13 +107,13 @@ Example :
 
 ```javascript
 
-foo = function(futur, a){
-    futur.send(a);
+foo = function(a, callback){
+    callback(null, a);
 }
 
-bar = function(futur, a){
+bar = function(a, callback){
     console.log(a);
-    futur.next();
+    callback(null);
 }
 
 var futur = new Futur;
@@ -175,13 +175,15 @@ futur.do( foo ).as('first_call_data') .with("I am foo");
 <a name="inject"></a>
 ##### inject( `Function` function )
 
+** BROKEN ***
+
 Prepends a function call to the stack, as the "next to be executed" item.
 .inject() works from inside called functions and is usefull to add a conditional treatment.
 
 Exemple : 
 
 ```javascript 
-foo = function(futur){
+foo = function(callback){
     console.log("foo");
 
     futur.inject(blah);
